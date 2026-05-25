@@ -1,0 +1,36 @@
+use pnet::datalink::{self, NetworkInterface};
+
+
+fn main() {
+
+        //Let: Declaramos la variable inmutable por que no metemos &mut
+        //interfaces: nombre de la variable, gilipollas que crees q era.
+        //Vec<NetworkInterface> es como un map, un array dinamico que meteremos las interfaces
+        /*datalink::interfaces(). Los 2 puntillos esos son pa llamar a una funcion dentro del
+          pive que va a traer las interfaces red, sin importar si es linux o windows
+         */
+    let interfaces: Vec<NetworkInterface> = datalink::interfaces();
+
+        
+    let interfaces_activas: Vec<NetworkInterface> = interfaces
+            //into_iter: esta shit es pa que el vector sea iterable, pa que vaya avanzando 1 a 1
+        .into_iter()
+            //filter: esta shit es literalmente un if, cada dato que entra si pasa esto va pa lante
+                //|iface|: basicamente, cada una lo llama, lo mete en un paquetito pa los filtros y que sea individual        
+                    //iface.is_up: Sabes ingles subnormal?
+                        //iface.is_loopback: pa evitar el localhost y el 127.0.0.1
+        .filter(|iface| iface.is_up() && !iface.is_loopback())
+            //collect: pa que lo que sobreviva lo meta en el vector de arriba
+        .collect();
+
+            //El some este es un optional del java, o trae algo o no.
+                //mac es paq si el some trae algo lo guarda en mac, es solo un parametro
+    if let Some(mac) = iface.mac {
+        println!("Direccion MAC: {}", mac)
+    }
+
+    print!("Direcciones ip: ");
+    for ip in &iface.ips {
+        println!("{} ", ip.ip)
+    }
+}
